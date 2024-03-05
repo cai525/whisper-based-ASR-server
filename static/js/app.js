@@ -35,7 +35,7 @@ ws.onmessage = function(evt) {
     // 创建Blob对象
     var blob_obj = new Blob([evt.data], { 'type': 'audio/ogg; codecs=opus' })
 
-    // 添加audio元素
+    // 添加audio显示框
     var tmp_div = document.createElement('div');
     var audio = document.createElement('audio');
     var tmp_span = document.createElement('span');
@@ -65,6 +65,13 @@ ws.onmessage = function(evt) {
     tmp_div.appendChild(tmp_btn);
     tmp_div.appendChild(tmp_span);
     msg_content.appendChild(tmp_div);
+
+    // // 添加翻译结果文本框
+    // var massage = document.createElement('message');
+    // massage.setAttribute('class', 'message');
+    // massage.innerHTML = '翻译结果';
+    // msg_content.appendChild(massage);
+
 }
 
 

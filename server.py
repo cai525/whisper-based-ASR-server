@@ -1,38 +1,62 @@
-# -*- coding: utf-8 -*-
+import io
+import time
+import os
+
 import tornado
 import tornado.websocket
+from pydub import AudioSegment
+
+import wave
+import numpy as np
 
 class webRTCServer(tornado.websocket.WebSocketHandler):
-    # 用户集合
     users = set()
 
-    def open(self):
-        # 连接建立时往房间添加用户
+    def open(self, *args, **kwargs):
+        # add users when connection is established
         self.users.add(self)
 
     def on_message(self, message):
-        # 接收到消息时进行广
+        # get sender information
+        sender = str(self.request.remote_ip)
+        arrive_time = str(int(time.time()))
+        # a bug occurs in the AudioSegment. 
+        # bio = io.BytesIO()
+        # bio.write(message)
+        # audio = AudioSegment.from_file(bio, format="ogg")       # convert bytes to .ogg
+        # wav_data = audio.export(format="wav").read()            # convert .ogg to .wav
+        # with open("./audio/audio.wav", "wb") as wav_file:      # save .wav file
+        #     wav_file.write(wav_data)
+        
+        # TODO: The below method  is inefficient, causing extra IO. Try to fix the
+        # bugs above to optimize the conversion
+        audio_name = "./audio/" + sender + "_" + arrive_time
+        with open(audio_name + ".ogg", "wb") as f:      # save .wav file
+            f.write(message)
+        os.system("ffmpeg -i {name}.ogg {name}.wav \n \
+                  rm {name}.ogg".format(name=audio_name))
+        
+        # broadcast when a message is received
         for user in self.users: 
             user.write_message(message, binary=True)
 
     def on_close(self):
-        # 链接断开时移除用户
         self.users.remove(self)
 
     def check_origin(self, origin):
-        # 允许跨域访问
+        # allow cross-domain access
         return True
 
 
 if __name__ == '__main__':
-    # 定义路由
+    # configure the server
     app = tornado.web.Application([
         (r"/", webRTCServer),
         ],
         debug=True
     )
 
-    # 启动服务器
+    # start the server
     http_server = tornado.httpserver.HTTPServer(app)
     http_server.listen(8000)
     tornado.ioloop.IOLoop.current().start()
