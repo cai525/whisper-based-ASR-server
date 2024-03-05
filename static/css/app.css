@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
     width: 100%;
     height: 100%;
 }
@@ -30,7 +31,7 @@ html, body {
     border-radius: 15px;
     margin-top: 30px;
     margin-left: 10px;
-    box-shadow:2px 2px 5px #333333;
+    box-shadow: 2px 2px 5px #333333;
 }
 
 .play_btn {
@@ -52,4 +53,25 @@ html, body {
     float: right;
     margin-top: 10px;
     margin-right: 10px;
+}
+
+.message {
+    font-size: 18px;
+    font-family: 'Microsoft YaHei';
+    font-weight: bold;
+    float: right;
+    margin-top: 10px;
+    margin-right: 10px;
+    background-color: aliceblue;
+}
+
+.myText {
+    height: 50px;
+    width: 200px;
+    background-color: aliceblue;
+    border: 1px solid black;
+    border-radius: 15px;
+    margin-top: 30px;
+    margin-left: 10px;
+    box-shadow: 2px 2px 5px #333333;
 }

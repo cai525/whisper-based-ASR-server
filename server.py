@@ -20,16 +20,8 @@ class webRTCServer(tornado.websocket.WebSocketHandler):
         # get sender information
         sender = str(self.request.remote_ip)
         arrive_time = str(int(time.time()))
-        # a bug occurs in the AudioSegment. 
-        # bio = io.BytesIO()
-        # bio.write(message)
-        # audio = AudioSegment.from_file(bio, format="ogg")       # convert bytes to .ogg
-        # wav_data = audio.export(format="wav").read()            # convert .ogg to .wav
-        # with open("./audio/audio.wav", "wb") as wav_file:      # save .wav file
-        #     wav_file.write(wav_data)
-        
-        # TODO: The below method  is inefficient, causing extra IO. Try to fix the
-        # bugs above to optimize the conversion
+
+        # TODO: The below method  is inefficient, causing extra IO. Try to optimize it
         audio_name = "./audio/" + sender + "_" + arrive_time
         with open(audio_name + ".ogg", "wb") as f:      # save .wav file
             f.write(message)
@@ -37,8 +29,10 @@ class webRTCServer(tornado.websocket.WebSocketHandler):
                   rm {name}.ogg".format(name=audio_name))
         
         # broadcast when a message is received
-        for user in self.users: 
-            user.write_message(message, binary=True)
+        self.write_message(message, binary=True)
+        text = "Hello!"
+        self.write_message(text)
+        
 
     def on_close(self):
         self.users.remove(self)

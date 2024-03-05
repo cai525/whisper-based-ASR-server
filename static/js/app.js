@@ -21,17 +21,27 @@ const ws = new WebSocket(wsUrl);
 ws.binaryType = "arraybuffer";
 
 // Websocket钩子方法
-ws.onopen = function(evt) {
-    console.log('ws open()');
+ws.onopen = function (evt) {
+  console.log('ws open()');
 }
 
-ws.onerror = function(err) {
-    console.error('ws onerror() ERR:', err);
+ws.onerror = function (err) {
+  console.error('ws onerror() ERR:', err);
 }
 
-ws.onmessage = function(evt) {
-  console.log('ws onmessage() data:', typeof(evt.data));
-
+ws.onmessage = function (evt) {
+  console.log('ws onmessage() data:', typeof (evt.data));
+  // 判断 typeof (evt.data) 是否为文本类型
+  if (typeof (evt.data) === 'string') {
+    // 添加文本显示框
+    var tmp_div = document.createElement('div');
+    tmp_div.setAttribute('class', 'myText');
+    var massage = document.createElement('message');
+    massage.setAttribute('class', 'message');
+    massage.innerHTML = evt.data;
+    tmp_div.appendChild(massage)
+    msg_content.appendChild(tmp_div);
+  } else if (typeof (evt.data) === 'object') {
     // 创建Blob对象
     var blob_obj = new Blob([evt.data], { 'type': 'audio/ogg; codecs=opus' })
 
@@ -40,7 +50,7 @@ ws.onmessage = function(evt) {
     var audio = document.createElement('audio');
     var tmp_span = document.createElement('span');
     var tmp_btn = document.createElement('img');
-   
+
     tmp_div.setAttribute('class', 'myAudio');
     tmp_span.setAttribute('class', 'audio_time');
     tmp_btn.setAttribute('class', 'play_btn');
@@ -65,13 +75,9 @@ ws.onmessage = function(evt) {
     tmp_div.appendChild(tmp_btn);
     tmp_div.appendChild(tmp_span);
     msg_content.appendChild(tmp_div);
-
-    // // 添加翻译结果文本框
-    // var massage = document.createElement('message');
-    // massage.setAttribute('class', 'message');
-    // massage.innerHTML = '翻译结果';
-    // msg_content.appendChild(massage);
-
+  } else {
+    console.error('Unexpected data type:', typeof (evt.data));
+  }
 }
 
 
@@ -81,10 +87,10 @@ if (navigator.mediaDevices.getUserMedia) {
   var constraints = { audio: true };
   var chunks = [];
 
-  var onSuccess = function(stream) {
+  var onSuccess = function (stream) {
     var mediaRecorder = new MediaRecorder(stream);
 
-    record.onclick = function() {
+    record.onclick = function () {
       mediaRecorder.start();
       console.log(mediaRecorder.state);
       console.log("recorder started");
@@ -93,7 +99,7 @@ if (navigator.mediaDevices.getUserMedia) {
       record.disabled = true;
     }
 
-    stop.onclick = function() {
+    stop.onclick = function () {
       mediaRecorder.stop();
       console.log(mediaRecorder.state);
       console.log("recorder stopped");
@@ -102,29 +108,29 @@ if (navigator.mediaDevices.getUserMedia) {
       record.disabled = false;
     }
 
-    mediaRecorder.onstop = function(e) {
+    mediaRecorder.onstop = function (e) {
       console.log("data available after MediaRecorder.stop() called.");
 
       // 保存录音
-      var blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
+      var blob = new Blob(chunks, { 'type': 'audio/ogg; codecs=opus' });
 
       // 发送录音
       ws.send(blob)
-      
-      
+
+
       // 重置录音数据
       chunks = [];
 
-      console.log("recorder stopped"); 
+      console.log("recorder stopped");
     }
 
     // 录音逻辑
-    mediaRecorder.ondataavailable = function(e) {
+    mediaRecorder.ondataavailable = function (e) {
       chunks.push(e.data);
     }
   }
 
-  var onError = function(err) {
+  var onError = function (err) {
     console.log('The following error occured: ' + err);
   }
 
@@ -132,5 +138,5 @@ if (navigator.mediaDevices.getUserMedia) {
   navigator.mediaDevices.getUserMedia(constraints).then(onSuccess, onError);
 
 } else {
-   console.log('getUserMedia not supported on your browser!');
+  console.log('getUserMedia not supported on your browser!');
 }
