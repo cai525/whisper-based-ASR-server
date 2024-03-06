@@ -1,9 +1,23 @@
-import io
 import time
 import os
 
 import tornado
 import tornado.websocket
+
+from src.asr.transcribe import TranscribeConfig, Transcribe, WhisperModel
+
+
+def f_asr(path):
+    config = TranscribeConfig(
+        inputs=path,
+        lang="en",
+        whisper_model=WhisperModel.MEDIUM.value,
+        model_path="/home/cpf/asr/autocut/archive/model/medium.pt",
+    )
+    model = Transcribe(config)
+    ret_list = model.run()
+    ret = ret_list[0]
+    return ret
 
 
 class webRTCServer(tornado.websocket.WebSocketHandler):
@@ -20,16 +34,14 @@ class webRTCServer(tornado.websocket.WebSocketHandler):
 
         # TODO: The below method  is inefficient, causing extra IO. Try to optimize it
         audio_name = "./audio/" + sender + "_" + arrive_time
-        with open(audio_name + ".ogg", "wb") as f:      # save .wav file
+        with open(audio_name + ".ogg", "wb") as f:  # save .wav file
             f.write(message)
         os.system("ffmpeg -i {name}.ogg {name}.wav \n \
                   rm {name}.ogg".format(name=audio_name))
-        
-        # broadcast when a message is received
-        self.write_message(message, binary=True)
-        text = "Hello!"
+
+        # self.write_message(message, binary=True)
+        text = f_asr(audio_name + ".wav")
         self.write_message(text)
-        
 
     def on_close(self):
         self.users.remove(self)
@@ -43,9 +55,7 @@ if __name__ == '__main__':
     # configure the server
     app = tornado.web.Application([
         (r"/", webRTCServer),
-        ],
-        debug=True
-    )
+    ], debug=True)
 
     # start the server
     http_server = tornado.httpserver.HTTPServer(app)

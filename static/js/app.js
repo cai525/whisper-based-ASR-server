@@ -1,3 +1,4 @@
+/* 创建音频框 */
 function createAudioBox(blob_obj, msg_content) {
   var tmp_div = document.createElement('div');
   var audio = document.createElement('audio');
@@ -78,7 +79,7 @@ ws.onmessage = function (evt) {
     tmp_div.appendChild(massage)
     msg_content.appendChild(tmp_div);
   } else if (typeof (evt.data) === 'object') {
-    // pass
+    // TODO: 未来添加TTS服务时，可在此增加接受语音的逻辑
   } else {
     console.error('Unexpected data type:', typeof (evt.data));
   }
