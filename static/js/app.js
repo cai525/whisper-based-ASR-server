@@ -1,7 +1,43 @@
+function createAudioBox(blob_obj, msg_content) {
+  var tmp_div = document.createElement('div');
+  var audio = document.createElement('audio');
+  var tmp_span = document.createElement('span');
+  var tmp_btn = document.createElement('img');
+
+  tmp_div.setAttribute('class', 'myAudio');
+  tmp_span.setAttribute('class', 'audio_time');
+  tmp_btn.setAttribute('class', 'play_btn');
+  tmp_btn.src = "/static/images/audio-high.png"
+  audio.setAttribute('id', 'myAudio');
+  audio.src = window.URL.createObjectURL(blob_obj);
+  audio.addEventListener('loadedmetadata', () => {
+    if (audio.duration === Infinity || isNaN(Number(audio.duration))) {
+      audio.currentTime = 1e101   // 相当于快进
+      audio.addEventListener('timeupdate', getDuration)
+    }
+  })
+
+  function getDuration(event) {
+    event.target.currentTime = 0
+    event.target.removeEventListener('timeupdate', getDuration)
+    tmp_span.innerHTML = event.target.duration + '"'
+  }
+  tmp_btn.onclick = function () {
+    if (audio.paused) {
+      audio.play();
+    } else {
+      audio.pause();
+    }
+  }
+  tmp_div.appendChild(audio);
+  tmp_div.appendChild(tmp_btn);
+  tmp_div.appendChild(tmp_span);
+  msg_content.appendChild(tmp_div);
+}
+
 // 获取页面元素
 var record = document.querySelector('.record');
 var stop = document.querySelector('.stop');
-var send = document.querySelector('.send');
 var msg_content = document.querySelector('.content');
 
 // 初始化按钮状态
@@ -42,39 +78,7 @@ ws.onmessage = function (evt) {
     tmp_div.appendChild(massage)
     msg_content.appendChild(tmp_div);
   } else if (typeof (evt.data) === 'object') {
-    // 创建Blob对象
-    var blob_obj = new Blob([evt.data], { 'type': 'audio/ogg; codecs=opus' })
-
-    // 添加audio显示框
-    var tmp_div = document.createElement('div');
-    var audio = document.createElement('audio');
-    var tmp_span = document.createElement('span');
-    var tmp_btn = document.createElement('img');
-
-    tmp_div.setAttribute('class', 'myAudio');
-    tmp_span.setAttribute('class', 'audio_time');
-    tmp_btn.setAttribute('class', 'play_btn');
-    tmp_btn.src = "/static/images/audio-high.png"
-    audio.setAttribute('id', 'myAudio');
-    audio.src = window.URL.createObjectURL(blob_obj);
-    audio.onloadedmetadata = function () {
-      var dtime = 0;
-      setTimeout(() => {
-        dtime = audio.duration;
-        tmp_span.innerHTML = dtime + '"';
-      }, 100);
-    };
-    tmp_btn.onclick = function () {
-      if (audio.paused) {
-        audio.play();
-      } else {
-        audio.pause();
-      }
-    }
-    tmp_div.appendChild(audio);
-    tmp_div.appendChild(tmp_btn);
-    tmp_div.appendChild(tmp_span);
-    msg_content.appendChild(tmp_div);
+    // pass
   } else {
     console.error('Unexpected data type:', typeof (evt.data));
   }
@@ -114,9 +118,11 @@ if (navigator.mediaDevices.getUserMedia) {
       // 保存录音
       var blob = new Blob(chunks, { 'type': 'audio/ogg; codecs=opus' });
 
+      // 生成录音框
+      createAudioBox(blob, msg_content)
+
       // 发送录音
       ws.send(blob)
-
 
       // 重置录音数据
       chunks = [];

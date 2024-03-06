@@ -10,7 +10,7 @@ body {
 
 .content {
     width: 500px;
-    height: 400px;
+    height: 600px;
     border: solid 1px black;
     overflow-y: auto;
     margin: 0 auto;
@@ -30,7 +30,7 @@ body {
     border: 1px solid black;
     border-radius: 15px;
     margin-top: 30px;
-    margin-left: 10px;
+    margin-left: 290px;
     box-shadow: 2px 2px 5px #333333;
 }
 
@@ -47,18 +47,18 @@ body {
 }
 
 .audio_time {
-    font-size: 18px;
+    font-size: 15px;
     font-family: 'Microsoft YaHei';
-    font-weight: bold;
+    /* font-weight: bold; */
     float: right;
     margin-top: 10px;
     margin-right: 10px;
 }
 
 .message {
-    font-size: 18px;
+    font-size: 15px;
     font-family: 'Microsoft YaHei';
-    font-weight: bold;
+    /* font-weight: bold; */
     float: right;
     margin-top: 10px;
     margin-right: 10px;
@@ -72,6 +72,6 @@ body {
     border: 1px solid black;
     border-radius: 15px;
     margin-top: 30px;
-    margin-left: 10px;
+    margin-left: 290px;
     box-shadow: 2px 2px 5px #333333;
 }
