@@ -1,18 +1,7 @@
-# audioRecord
-- 仿微信的语音段传输v1.0
-- 使用 webRTC(获取和录制音频)和 webSocket（发送音频流）
-
-# ToDo
-- 用vue-pwa框架搭建项目
-- 集成vux UI框架
-
-# 启动
-- pip install tornado
-- python server.py
-- 启动nginx或caddy服务器
-- 一个浏览器打开index.html
-- 另一个浏览器打开index.html
-- 开始录音，停止自动发送
-
-# 效果图
-![](1.png)
+# whisper-based ASR server
+该项目旨在实现一个用于语音翻译(ASR)服务器;
+- ASR 识别基于 [Whisper](https://github.com/openai/whisper)
+- 服务器后端基于 
+    - nginx: 用于提供静态网页的https服务 
+    - tornado: 一个Python web框架和异步网络库. 通过使用非阻塞网络I/O, Tornado 可以支持上万级的连接，处理 长连接、WebSockets、和其他需要与每个用户保持长久连接的应用.
+- 前端代码使用 html+css+js 编写的网页;
