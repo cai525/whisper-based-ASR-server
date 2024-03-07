@@ -73,10 +73,7 @@ ws.onmessage = function (evt) {
     // 添加文本显示框
     var tmp_div = document.createElement('div');
     tmp_div.setAttribute('class', 'myText');
-    var massage = document.createElement('message');
-    massage.setAttribute('class', 'message');
-    massage.innerHTML = evt.data;
-    tmp_div.appendChild(massage)
+    tmp_div.innerHTML = evt.data;
     msg_content.appendChild(tmp_div);
   } else if (typeof (evt.data) === 'object') {
     // TODO: 未来添加TTS服务时，可在此增加接受语音的逻辑

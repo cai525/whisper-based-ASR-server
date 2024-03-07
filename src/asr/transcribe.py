@@ -1,10 +1,8 @@
 import logging
-import os
 import time
 from typing import Any, List, Dict
 
 import numpy as np
-import srt
 import torch
 
 from src.asr import utils, whisper_model
@@ -34,10 +32,11 @@ class TranscribeConfig:
                                           or "openai" (use OpenAI API). Defaults to WhisperMode.WHISPER.value.
             openai_rpm (int, optional): OpenAI Whisper API requests per minute. Defaults to 3.
             whisper_model (str, optional): Whisper model to use. Defaults to WhisperModel.SMALL.value.
-            model_path (str, optional): Path to the model. Defaults to "".
+            model_path (str, optional): Path to save the model file. Defaults to "".
             vad (bool, optional): Enable voice activity detection. Defaults to True.
             device (str, optional): Device to use for inference. Options are "cpu" or "cuda". Defaults to "cpu".
         """
+        assert isinstance(inputs, list)
         self.inputs = inputs
         self.lang = lang
         self.prompt = prompt

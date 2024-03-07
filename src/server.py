@@ -1,5 +1,11 @@
+import logging
 import time
 import os
+import sys
+from typing import List, Type
+
+os.chdir("../")
+sys.path.append(os.getcwd())
 
 import tornado
 import tornado.websocket
@@ -7,25 +13,30 @@ import tornado.websocket
 from src.asr.transcribe import TranscribeConfig, Transcribe, WhisperModel
 
 
-def f_asr(path):
-    config = TranscribeConfig(
-        inputs=path,
-        lang="en",
-        whisper_model=WhisperModel.MEDIUM.value,
-        model_path="/home/cpf/asr/autocut/archive/model/medium.pt",
-    )
-    model = Transcribe(config)
-    ret_list = model.run()
-    ret = ret_list[0]
-    return ret
+class WebRTCApplication(tornado.web.Application):
+
+    def __init__(self, handlers, **settings) -> None:
+        super().__init__(handlers, **settings)
+        # Contain all the connections
+        self.users = set()
+        # members about ASR module
+        asr_config = TranscribeConfig(
+            inputs=[],
+            lang="en",
+            whisper_model=WhisperModel.MEDIUM.value,
+            model_path="/home/cpf/asr/autocut/archive/model",
+        )
+        self.model = Transcribe(asr_config)
+        logging.info("<INFO>: Finish load whisper model")
 
 
-class webRTCServer(tornado.websocket.WebSocketHandler):
-    users = set()
+class webRTCHandler(tornado.websocket.WebSocketHandler):
 
     def open(self, *args, **kwargs):
+        logging.info("<INFO>: build connection with {ip}".format(ip=self.request.remote_ip))
         # add users when connection is established
-        self.users.add(self)
+        assert isinstance(self.application, WebRTCApplication)
+        self.application.users.add(self)
 
     def on_message(self, message):
         # get sender information
@@ -39,22 +50,36 @@ class webRTCServer(tornado.websocket.WebSocketHandler):
         os.system("ffmpeg -i {name}.ogg {name}.wav \n \
                   rm {name}.ogg".format(name=audio_name))
 
-        # self.write_message(message, binary=True)
-        text = f_asr(audio_name + ".wav")
+        self.write_message(message, binary=True)
+        # text = "Hello World"
+        text = self._f_asr(audio_name + ".wav")
         self.write_message(text)
 
     def on_close(self):
-        self.users.remove(self)
+        assert isinstance(self.application, WebRTCApplication)
+        self.application.users.remove(self)
 
     def check_origin(self, origin):
         # allow cross-domain access
         return True
 
+    def _f_asr(self, path: str):
+        assert isinstance(self.application, WebRTCApplication)
+        model = self.application.model
+        model.args.inputs = [path]
+        logging.info("<INFO>: begin transcribing...")
+        ret_list = model.run()
+        ret = ret_list[0]
+        return ret
+
 
 if __name__ == '__main__':
+    # log setting
+    logging.basicConfig(level=logging.INFO)
+    logging.info("<INFO>: Starting the server...")
     # configure the server
-    app = tornado.web.Application([
-        (r"/", webRTCServer),
+    app = WebRTCApplication([
+        (r"/", webRTCHandler),
     ], debug=True)
 
     # start the server

@@ -9,7 +9,7 @@ body {
 }
 
 .content {
-    width: 500px;
+    width: 700px;
     height: 600px;
     border: solid 1px black;
     overflow-y: auto;
@@ -30,7 +30,7 @@ body {
     border: 1px solid black;
     border-radius: 15px;
     margin-top: 30px;
-    margin-left: 290px;
+    margin-left: 490px;
     box-shadow: 2px 2px 5px #333333;
 }
 
@@ -55,23 +55,24 @@ body {
     margin-right: 10px;
 }
 
-.message {
+/* .message {
     font-size: 15px;
     font-family: 'Microsoft YaHei';
-    /* font-weight: bold; */
     float: right;
     margin-top: 10px;
     margin-right: 10px;
     background-color: aliceblue;
-}
+} */
 
 .myText {
-    height: 50px;
-    width: 200px;
+    font-size: 15px;
+    font-family: 'Microsoft YaHei';
+    padding: 2%;
+    width: 400px;
     background-color: aliceblue;
     border: 1px solid black;
     border-radius: 15px;
     margin-top: 30px;
-    margin-left: 290px;
+    margin-left: 250px;
     box-shadow: 2px 2px 5px #333333;
 }
