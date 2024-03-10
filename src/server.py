@@ -22,7 +22,7 @@ class WebRTCApplication(tornado.web.Application):
         # members about ASR module
         asr_config = TranscribeConfig(
             inputs=[],
-            lang="en",
+            lang="zh",
             whisper_model=WhisperModel.MEDIUM.value,
             model_path="/home/cpf/asr/autocut/archive/model",
         )
