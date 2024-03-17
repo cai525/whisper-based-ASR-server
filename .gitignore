@@ -3,3 +3,4 @@ audio/
 *.jpg
 *.wav
 __pycache__/
+.vscode

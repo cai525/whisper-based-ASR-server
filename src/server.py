@@ -10,7 +10,7 @@ sys.path.append(os.getcwd())
 import tornado
 import tornado.websocket
 
-from src.asr.transcribe import TranscribeConfig, Transcribe, WhisperModel
+from src.asr.transcribe import TranscribeConfig, Transcribe, WhisperModel, WhisperMode
 
 
 class WebRTCApplication(tornado.web.Application):
@@ -24,7 +24,9 @@ class WebRTCApplication(tornado.web.Application):
             inputs=[],
             lang="zh",
             whisper_model=WhisperModel.MEDIUM.value,
-            model_path="/home/cpf/asr/autocut/archive/model",
+            whisper_mode=WhisperMode.FASTER.value,
+            model_path="/home/cpf/asr/whisper_models/faster-whisper/medium",
+            prompt="以下是普通话的句子:"
         )
         self.model = Transcribe(asr_config)
         logging.info("<INFO>: Finish load whisper model")

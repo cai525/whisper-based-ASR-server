@@ -268,6 +268,7 @@ class FasterWhisperModel(AbstractWhisperModel):
         self,
         model_name: Literal["tiny", "base", "small", "medium", "large", "large-v2"] = "small",
         device: Union[Literal["cpu", "cuda"], None] = None,
+        download_root: str = None
     ):
         try:
             from faster_whisper import WhisperModel
@@ -276,7 +277,7 @@ class FasterWhisperModel(AbstractWhisperModel):
                 "Please use faster mode(pip install '.[faster]') or all mode(pip install '.[all]')")
 
         self.device = device if device else "cpu"
-        self.whisper_model = WhisperModel(model_name, self.device)
+        self.whisper_model = WhisperModel(download_root, self.device ,local_files_only=True)
 
     def _transcribe(self):
         raise Exception("Not implemented")
@@ -295,7 +296,7 @@ class FasterWhisperModel(AbstractWhisperModel):
                 task="transcribe",
                 language=lang,
                 initial_prompt=prompt,
-                vad_filter=False,
+                vad_filter=True,
             )
             segments = list(segments)  # The transcription will actually run here.
             r = {"origin_timestamp": seg, "segments": segments, "info": info}

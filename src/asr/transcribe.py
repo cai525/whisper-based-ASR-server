@@ -69,7 +69,7 @@ class Transcribe:
                 self.whisper_model.load()
             elif self.args.whisper_mode == WhisperMode.FASTER.value:
                 self.whisper_model = whisper_model.FasterWhisperModel(self.sampling_rate)
-                self.whisper_model.load(self.args.whisper_model, self.args.device)
+                self.whisper_model.load(self.args.whisper_model, self.args.device, self.args.model_path)
         logging.info(f"Done Init model in {time.time() - tic:.1f} sec")
 
     def run(self) -> List[str]:
@@ -85,7 +85,7 @@ class Transcribe:
 
     def _detect_voice_activity(self, audio) -> List[SPEECH_ARRAY_INDEX]:
         """Detect segments that have voice activities"""
-        if self.args.vad == "0":
+        if self.args.vad == "0" or self.args.whisper_mode == WhisperMode.FASTER.value:
             return [{"start": 0, "end": len(audio)}]
 
         tic = time.time()
@@ -130,4 +130,8 @@ class Transcribe:
         return res
 
     def _draw_text(self, ret_list: List[Dict[str, Any]]):
-        return " ".join([ret["text"] for ret in ret_list])
+        if self.args.whisper_mode == WhisperMode.FASTER.value:
+            ret = " ".join([ret.text for ret in ret_list[0]["segments"]])
+        else:
+            ret = " ".join([ret["text"] for ret in ret_list])
+        return ret
