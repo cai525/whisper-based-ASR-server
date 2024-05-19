@@ -5,7 +5,7 @@ self.addEventListener('install', function (event) {
       .then(function (cache) {
         cache.addAll([
           '/',
-          '/index.html',
+          '/templates/index.html',
           '/static/js/app.js',
           '/static/css/app.css',
           '/static/images/audio-high.png',

@@ -5,7 +5,6 @@ from abc import ABC, abstractmethod
 from typing import Literal, Union, List, Any, TypedDict
 
 import numpy as np
-import opencc
 import srt
 from pydub import AudioSegment
 from tqdm import tqdm
@@ -13,7 +12,7 @@ from tqdm import tqdm
 from .type import SPEECH_ARRAY_INDEX, LANG
 
 # whisper sometimes generate traditional chinese, explicitly convert
-cc = opencc.OpenCC("t2s")
+# cc = opencc.OpenCC("t2s")
 
 
 class AbstractWhisperModel(ABC):
@@ -96,7 +95,7 @@ class WhisperModel(AbstractWhisperModel):
                     index=0,
                     start=datetime.timedelta(seconds=start),
                     end=datetime.timedelta(seconds=end),
-                    content=cc.convert(text.strip()),
+                    content=text.strip(),
                 ))
 
         prev_end = 0
@@ -312,7 +311,7 @@ class FasterWhisperModel(AbstractWhisperModel):
                     index=0,
                     start=datetime.timedelta(seconds=start),
                     end=datetime.timedelta(seconds=end),
-                    content=cc.convert(text.strip()),
+                    content=text.strip(),
                 ))
 
         prev_end = 0

@@ -2,7 +2,6 @@ import logging
 import time
 import os
 import sys
-from typing import List, Type
 
 os.chdir("../")
 sys.path.append(os.getcwd())
@@ -26,7 +25,7 @@ class ChatApplication(tornado.web.Application):
             lang="zh",
             whisper_model=WhisperModel.MEDIUM.value,
             whisper_mode=WhisperMode.FASTER.value,
-            model_path="/home/cpf/asr/whisper_models/faster-whisper/medium",
+            model_path="./archive/private/model/faster_whisper/medium",
             prompt="以下是普通话的句子:")
         self.model = Transcribe(asr_config)
         with open("./archive/private/llm/api_key", "r") as f:

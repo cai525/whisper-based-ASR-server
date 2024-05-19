@@ -1,19 +1,13 @@
 import logging
 import os
-import re
 
 import ffmpeg
 import numpy as np
-import opencc
-import srt
 
 
 def load_audio(file: str, sr: int = 16000) -> np.ndarray:
     try:
-        out, _ = (ffmpeg.input(file, threads=0).output("-",
-                                                       format="s16le",
-                                                       acodec="pcm_s16le",
-                                                       ac=1,
+        out, _ = (ffmpeg.input(file, threads=0).output("-", format="s16le", acodec="pcm_s16le", ac=1,
                                                        ar=sr).run(cmd=["ffmpeg", "-nostdin"],
                                                                   capture_stdout=True,
                                                                   capture_stderr=True))
