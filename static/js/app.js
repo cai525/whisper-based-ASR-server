@@ -53,7 +53,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // 设置websocket服务器地址
-const wsUrl = 'ws://localhost:8000/';
+const wsUrl = 'ws://localhost:8000/asr_api/';
 const ws = new WebSocket(wsUrl);
 ws.binaryType = "arraybuffer";
 

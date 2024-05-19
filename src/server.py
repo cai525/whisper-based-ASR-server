@@ -14,7 +14,7 @@ from src.asr.transcribe import TranscribeConfig, Transcribe, WhisperModel, Whisp
 from src.llm.chat import ChatBot
 
 
-class WebRTCApplication(tornado.web.Application):
+class ChatApplication(tornado.web.Application):
 
     def __init__(self, handlers, **settings) -> None:
         super().__init__(handlers, **settings)
@@ -37,12 +37,18 @@ class WebRTCApplication(tornado.web.Application):
         logging.info("<INFO>: Finish load whisper model")
 
 
-class webRTCHandler(tornado.websocket.WebSocketHandler):
+class MainHandler(tornado.web.RequestHandler):
+
+    def get(self):
+        self.render("index.html")
+
+
+class ASRHandler(tornado.websocket.WebSocketHandler):
 
     def open(self, *args, **kwargs):
         logging.info("<INFO>: build connection with {ip}".format(ip=self.request.remote_ip))
         # add users when connection is established
-        assert isinstance(self.application, WebRTCApplication)
+        assert isinstance(self.application, ChatApplication)
         self.application.users.add(self)
         self.chat_bot = ChatBot(self.application.api_key, self.application.secret_key)
 
@@ -65,7 +71,6 @@ class webRTCHandler(tornado.websocket.WebSocketHandler):
         self.write_message(asr_res)
 
     def on_close(self):
-        assert isinstance(self.application, WebRTCApplication)
         self.application.users.remove(self)
         logging.info("<INFO>: close connection with {ip}".format(ip=self.request.remote_ip))
 
@@ -74,7 +79,7 @@ class webRTCHandler(tornado.websocket.WebSocketHandler):
         return True
 
     def _f_asr(self, path: str):
-        assert isinstance(self.application, WebRTCApplication)
+        assert isinstance(self.application, ChatApplication)
         model = self.application.model
         model.args.inputs = [path]
         logging.debug("<DEBUG>: begin transcribing...")
@@ -96,9 +101,15 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     logging.info("<INFO>: Starting the server...")
     # configure the server
-    app = WebRTCApplication([
-        (r"/", webRTCHandler),
-    ], debug=True)
+    app = ChatApplication(
+        [
+            (r"/", MainHandler),
+            (r"/asr_api", ASRHandler),
+        ],
+        template_path="./templates/",
+        static_path="./static/",
+        debug=True,
+    )
 
     # start the server
     http_server = tornado.httpserver.HTTPServer(app)
